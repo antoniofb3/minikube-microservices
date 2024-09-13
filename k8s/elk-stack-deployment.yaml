@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elk-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elk
+  template:
+    metadata:
+      labels:
+        app: elk
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+        ports:
+        - containerPort: 9200
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:7.9.2
+        ports:
+        - containerPort: 5044
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.9.2
+        ports:
+        - containerPort: 5601

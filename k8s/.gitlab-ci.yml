@@ -1,0 +1,32 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker build -t auth-service:latest auth-service/
+    - docker build -t product-service:latest product-service/
+    - docker build -t user-service:latest user-service/
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl apply -f k8s/auth-deployment.yaml
+    - kubectl apply -f k8s/auth-service.yaml
+    - kubectl apply -f k8s/product-deployment.yaml
+    - kubectl apply -f k8s/product-service.yaml
+    - kubectl apply -f k8s/user-deployment.yaml
+    - kubectl apply -f k8s/user-service.yaml
+    - kubectl apply -f k8s/ingress.yaml
